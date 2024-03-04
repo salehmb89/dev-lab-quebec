@@ -1,0 +1,15 @@
+<h4>Manage Drinks</h4>
+
+<% drinkData.forEach(drink => { %>
+    <form method="POST" action="/deleteDrink/<%= drink._id %>" style="display: inline-block; margin-right: 10px;">
+        <%= drink.drink_name %> (<%= drink.size %>)
+        <input type="submit" value="Delete">
+    </form>
+
+    <form method="POST" action="/updateDrink/<%= drink._id %>" style="display: inline-block;">
+        <%= drink.drink_name %> (<%= drink.size %>)
+        <input type="submit" value="Update">
+    </form>
+
+    <br />
+<% }) %>

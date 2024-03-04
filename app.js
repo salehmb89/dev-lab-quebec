@@ -1,15 +1,15 @@
 require('dotenv').config();
-const express = require('express')
-const app = express()
+const express = require('express');
+const app = express();
 const port = process.env.PORT || 5500;
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const bodyParser = require('body-parser')
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const bodyParser = require('body-parser');
 // set the view engine to ejs
-let path = require('path');
+const path = require('path');
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(process.env.URI, {
@@ -17,130 +17,132 @@ const client = new MongoClient(process.env.URI, {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
-  }
+  },
 });
 
 async function getChainsawData() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-    // Send a ping to confirm a successful connection
-    // await client.db("admin").command({ ping: 1 });
     const result = await client.db("saleh-quebec").collection("chainsaw-inventory").find().toArray();
-    console.log("mongo call await inside f/n: ", result);
-    return result; 
-  } 
-  catch(err) {
-    console.log("getChainsawData() error: ", err);
-  }
-  finally {
-    // Ensures that the client will close when you finish/error
-    //await client.close();
+    return result;
+  } catch (err) {
+    console.error("getChainsawData() error: ", err);
+    throw err; // Rethrow the error to be caught in the route handler
+  } finally {
+    await client.close();
   }
 }
 
-//reading from mongo
-app.get('/', async (req, res) =>  {
+async function getDrinkData() {
+  try {
+    await client.connect();
+    const result = await client.db("chillAppz").collection("drinkz").find().toArray();
+    return result;
+  } catch (err) {
+    console.error("getDrinkData() error: ", err);
+    throw err; // Rethrow the error to be caught in the route handler
+  } finally {
+    await client.close();
+  }
+}
 
-  let result = await getChainsawData().catch(console.error); ; 
+// Reading from MongoDB
+app.get('/', async (req, res) => {
+  try {
+    let chainsawData = await getChainsawData().catch(console.error);
+    let drinkData = await getDrinkData().catch(console.error);
 
-  console.log("getChainsawData() Result: ", result);
-
-  res.render('index', {
-   
-    pageTitle: "barry's saws", 
-    chainsawData: result 
-
-  });
-  
+    res.render('index', {
+      pageTitle: "saleh's saws",
+      chainsawData: chainsawData,
+      drinkData: drinkData
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error: " + err.message);
+  }
 });
 
-//create to mongo 
+// Create to MongoDB 
 app.post('/addSaw', async (req, res) => {
-
   try {
-    // console.log("req.body: ", req.body) 
-    client.connect; 
-    const collection = client.db("saleh-quebec").collection("chainsaw-inventory");
+    // Connect to the MongoDB client before performing operations
+    await client.connect();
     
-    //draws from body parser 
+    const collection = client.db("saleh-quebec").collection("chainsaw-inventory");
+
+    // Draw from body parser
     console.log(req.body);
     
     await collection.insertOne(req.body);
-      
+
+    // Disconnect from the MongoDB client after operations
+    await client.close();
 
     res.redirect('/');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error: " + err.message);
   }
-  catch(err){
-    console.log(err)
-  }
-  finally{
-   // client.close()
-  }
+});
 
-})
 
 app.post('/updateDrink/:id', async (req, res) => {
-
   try {
-    console.log("req.parms.id: ", req.params.id) 
-    
-    client.connect; 
-    const collection = client.db("chillAppz").collection("drinkz");
-    let result = await collection.findOneAndUpdate( 
-      {"_id": ObjectId(req.params.id)}, { $set: {"size": "REALLY BIG DRINK" } }
-    )
-    .then(result => {
-      console.log(result); 
-      res.redirect('/');
-    })
-    .catch(error => console.error(error))
-  }
-  finally{
-    //client.close()
-  }
+    // Connect to the MongoDB client before performing operations
+    await client.connect();
 
-})
+    const collection = client.db("chillAppz").collection("drinkz");
+    let result = await collection.findOneAndUpdate(
+      { "_id": new ObjectId(req.params.id) }, 
+      { $set: { "size": "REALLY BIG DRINK" } }
+    );
+
+    console.log(result);
+
+    // Disconnect from the MongoDB client after operations
+    await client.close();
+
+    res.redirect('/');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error: " + err.message);
+  }
+});
 
 app.post('/deleteDrink/:id', async (req, res) => {
-
   try {
-    console.log("req.parms.id: ", req.params.id) 
-    
-    client.connect; 
+    // Connect to the MongoDB client before performing operations
+    await client.connect();
+
     const collection = client.db("chillAppz").collection("drinkz");
-    let result = await collection.findOneAndDelete( 
-      {
-        "_id": ObjectId(req.params.id)
-      }
-    )
-    .then(result => {
-      console.log(result); 
-      res.redirect('/');
-    })
-    .catch(error => console.error(error))
+    let result = await collection.findOneAndDelete(
+      { "_id": new ObjectId(req.params.id) }
+    );
+
+    console.log(result);
+
+    // Disconnect from the MongoDB client after operations
+    await client.close();
+
+    res.redirect('/');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error: " + err.message);
   }
-  finally{
-    //client.close()
-  }
+});
 
-})
 
-app.get('/name', (req,res) => {
 
-  console.log("in get to slash name:", req.query.ejsFormName); 
-  myTypeServer = req.query.ejsFormName; 
-
+app.get('/name', (req, res) => {
+  console.log("in get to slash name:", req.query.ejsFormName);
+  myTypeServer = req.query.ejsFormName;
   res.render('index', {
     myTypeClient: myTypeServer,
     myResultClient: "myResultServer"
-
   });
-
-  
-})
-
+});
 
 app.listen(port, () => {
-console.log(`salehs saws (quebec) app listening on port ${port}`)
-})
+  console.log(`salehs saws (quebec) app listening on port ${port}`);
+});

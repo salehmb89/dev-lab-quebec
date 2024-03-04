@@ -3,24 +3,25 @@
 <h1>Welcome to Saleh's Chainsaw App</h1>
 
 <p>
-    <%= chainsawData.length %>
+    <%= chainsawData.length %> chainsaws available
 </p>
 
-//todo: display the contents of the chainsawData...not just the length. 
+<ul>
+    <% for (let i = 0; i < chainsawData.length; i++) { %>
+        <li>
+            Chainsaw <%= i + 1 %>: <%= chainsawData[i].sawName %> (ID: <%= chainsawData[i]._id %>)
+        </li>
+    <% } %>
+</ul>
 
-<h3> add a new drink </h3>
+<h3>Add a new drink</h3>
 
 <form method="POST" action="/addSaw">
-    <label for="sawName">Saw Name</label>
-    <input name="sawName" placeholder="new saw name">
-    <input type="submit" value="add a new saw" />
+    <label for="sawName">Chainsaw Name</label>
+    <input name="sawName" placeholder="New chainsaw name">
+    <input type="submit" value="Add a new chainsaw" />
 </form>
 
-
-
-
-
-
-                
+<%- include('partials/drink-actions-form.ejs', { drinkData: drinkData }) %>
 
 <%- include('partials/html-end.ejs') %>
