@@ -26,7 +26,7 @@ async function getChainsawData() {
     await client.connect();
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
-    const result = await client.db("barrys-hobbies-quebec").collection("chainsaw-inventory").find().toArray();
+    const result = await client.db("saleh-quebec").collection("chainsaw-inventory").find().toArray();
     console.log("mongo call await inside f/n: ", result);
     return result; 
   } 
@@ -61,7 +61,7 @@ app.post('/addSaw', async (req, res) => {
   try {
     // console.log("req.body: ", req.body) 
     client.connect; 
-    const collection = client.db("barrys-hobbies-quebec").collection("chainsaw-inventory");
+    const collection = client.db("saleh-quebec").collection("chainsaw-inventory");
     
     //draws from body parser 
     console.log(req.body);
@@ -142,5 +142,5 @@ app.get('/name', (req,res) => {
 
 
 app.listen(port, () => {
-console.log(`barrys saws (quebec) app listening on port ${port}`)
+console.log(`salehs saws (quebec) app listening on port ${port}`)
 })
