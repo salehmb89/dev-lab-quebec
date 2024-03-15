@@ -18,11 +18,11 @@
                         <li>
                             Chainsaw <%= i + 1 %>: <%= chainsawData[i].sawName %> (ID: <%= chainsawData[i]._id %>)
 
-                            <form method="POST" action="/updateSaw/<%= chainsawData[i]._id %>" style="display: inline-block;">
+                            <form method="POST" action="/updateDrink/<%= chainsawData[i]._id %>" style="display: inline-block;">
                                 <input name="sawName" value="<%= chainsawData[i].sawName %>"> 
                                 <input type="submit" value="Update">
                             </form>
-            
+           
                             
                         </li>
                     <% } %>
