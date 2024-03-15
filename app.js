@@ -87,7 +87,7 @@ app.post('/addSaw', async (req, res) => {
 });
 
 
-app.post('/updateDrink/:id', async (req, res) => {
+app.post('/updateSaw/:id', async (req, res) => {
   try {
     // Connect to the MongoDB client before performing operations
     await client.connect();
