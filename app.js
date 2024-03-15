@@ -129,19 +129,6 @@ app.post('/deleteSaw/:id', async (req, res) => {
 });
 
 
-    console.log(result);
-
-    // Disconnect from the MongoDB client after operations
-    await client.close();
-
-    res.redirect('/');
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Internal Server Error: " + err.message);
-  }
-});
-
-
 
 app.get('/name', (req, res) => {
   console.log("in get to slash name:", req.query.ejsFormName);
