@@ -89,18 +89,16 @@ app.post('/addSaw', async (req, res) => {
 
 app.post('/updateSaw/:id', async (req, res) => {
   try {
-    // Connect to the MongoDB client before performing operations
     await client.connect();
 
-    const collection = client.db("chillAppz").collection("drinkz");
+    const collection = client.db("saleh-quebec").collection("chainsaw-inventory");
     let result = await collection.findOneAndUpdate(
       { "_id": new ObjectId(req.params.id) }, 
-      { $set: { "size": "REALLY BIG DRINK" } }
+      { $set: { "sawName": req.body.sawName } }
     );
 
     console.log(result);
 
-    // Disconnect from the MongoDB client after operations
     await client.close();
 
     res.redirect('/');
@@ -110,15 +108,26 @@ app.post('/updateSaw/:id', async (req, res) => {
   }
 });
 
-app.post('/deleteDrink/:id', async (req, res) => {
+app.post('/deleteSaw/:id', async (req, res) => {
   try {
-    // Connect to the MongoDB client before performing operations
     await client.connect();
 
-    const collection = client.db("chillAppz").collection("drinkz");
+    const collection = client.db("saleh-quebec").collection("chainsaw-inventory");
     let result = await collection.findOneAndDelete(
       { "_id": new ObjectId(req.params.id) }
     );
+
+    console.log(result);
+
+    await client.close();
+
+    res.redirect('/');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error: " + err.message);
+  }
+});
+
 
     console.log(result);
 
