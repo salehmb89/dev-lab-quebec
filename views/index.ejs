@@ -1,20 +1,45 @@
+
 <%- include('partials/html-start.ejs') %>
 
 <h1>Welcome to Saleh's Chainsaw App</h1>
 
-<p>
-    <%= chainsawData.length %> chainsaws available
-</p>
 
-<ul>
-    <% for (let i = 0; i < chainsawData.length; i++) { %>
-        <li>
-            Chainsaw <%= i + 1 %>: <%= chainsawData[i].sawName %> (ID: <%= chainsawData[i]._id %>)
-        </li>
-    <% } %>
-</ul>
+<div class="row">
 
-<h3>Add a new drink</h3>
+    <div class="col-md-4">
+
+        <div class="card">
+
+            <h4 class="card-title"><%= chainsawData.length %> chainsaws available</h4>
+            <p class="card-body">
+
+                <ul>
+                    <% for (let i = 0; i < chainsawData.length; i++) { %>
+                        <li>
+                            Chainsaw <%= i + 1 %>: <%= chainsawData[i].sawName %> (ID: <%= chainsawData[i]._id %>)
+
+                            <form method="POST" action="/updateSaw/<%= chainsawData[i]._id %>" style="display: inline-block;">
+                                <input name="sawName" value="<%= chainsawData[i].sawName %>"> 
+                                <input type="submit" value="Update">
+                            </form>
+            
+                            
+                        </li>
+                    <% } %>
+                </ul>
+                
+           
+            
+            </p>
+        </div>
+
+
+    </div>
+</div>
+
+
+
+<h3>Add a new saw</h3>
 
 <form method="POST" action="/addSaw">
     <label for="sawName">Chainsaw Name</label>
@@ -25,3 +50,4 @@
 <%- include('partials/drink-actions-form.ejs', { drinkData: drinkData }) %>
 
 <%- include('partials/html-end.ejs') %>
+
